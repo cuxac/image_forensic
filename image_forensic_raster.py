@@ -40,7 +40,7 @@ warnings.filterwarnings("ignore")
 try:
     import fitz  # PyMuPDF
 except ImportError:
-    sys.exit("❌  PyMuPDF manquant — pip install pymupdf")
+    sys.exit("  PyMuPDF manquant — pip install pymupdf")
 
 try:
     import cv2
@@ -48,7 +48,7 @@ try:
     from PIL import Image, ImageChops, ImageEnhance
     from scipy import ndimage
 except ImportError as e:
-    sys.exit(f"❌  {e}\n   pip install opencv-python numpy Pillow scipy")
+    sys.exit(f"  {e}\n   pip install opencv-python numpy Pillow scipy")
 
 # Dépendances optionnelles pour le rendu de pages vectorielles
 # pypdfium2 est utilisé à la place de pdf2image/poppler : pas de dépendance système
@@ -245,7 +245,7 @@ def render_vector_pages(pdf_path, figure_map, dpi=150):
                 "is_rendered":  True,
             })
         except Exception as e:
-            print(f"  ⚠  Rendu page {page_num} impossible : {e}", file=sys.stderr)
+            print(f"   Rendu page {page_num} impossible : {e}", file=sys.stderr)
 
     doc.close()
     return rendered_images
@@ -312,7 +312,7 @@ def extract_images_from_pdf(pdf_path, min_size=50, max_aspect_ratio=5.0):
                 print(f"  ⚠  Page {page_num+1}, img {img_idx}: {e}", file=sys.stderr)
 
     if skipped_dups or skipped_logos:
-        print(f"  ⏭  Ignorées : {skipped_dups} doublon(s), "
+        print(f"  Ignorées : {skipped_dups} doublon(s), "
               f"{skipped_logos} bandeau(x)/logo(s) (ratio > {max_aspect_ratio})")
 
     return images, doc
@@ -757,11 +757,11 @@ def generate_html_report(pdf_path, reports, output_path):
     • <b>Histogramme</b> : motif en peigne → retouche des courbes tonales<br>
     • <b>EXIF</b> : logiciel de retouche ou dates incohérentes dans les métadonnées<br>
     <br>
-    <b>ℹ️  Numéros de figure</b> extraits automatiquement du texte du PDF
+    <b> Numéros de figure</b> extraits automatiquement du texte du PDF
     (patterns "Figure N", "Fig. N", "FIGURE N"). Les panneaux listés (A, B, C…)
     sont ceux mentionnés dans la légende sur la même page.<br>
     <br>
-    <b>⚠️ Important :</b> Ces analyses sont des <em>indices</em>, pas des preuves.
+    <b> Important :</b> Ces analyses sont des <em>indices</em>, pas des preuves.
     Tout score élevé doit être vérifié par un expert.
   </div>
 </body>
@@ -789,14 +789,14 @@ def main():
     args = parser.parse_args()
 
     if not os.path.isfile(args.pdf):
-        sys.exit(f"❌  Fichier introuvable : {args.pdf}")
+        sys.exit(f"  Fichier introuvable : {args.pdf}")
 
     # 1. Extraction
     print(f"📄  Extraction des images de : {args.pdf}")
     images, doc = extract_images_from_pdf(args.pdf, min_size=args.min_size, max_aspect_ratio=args.max_ratio)
     if not images:
         doc.close()
-        sys.exit("⚠️  Aucune image trouvée.")
+        sys.exit("  Aucune image trouvée.")
 
     # 2. Détection des figures
     print("🔎  Détection des numéros de figure dans le texte…")
@@ -814,19 +814,19 @@ def main():
     vector_pages = {p: lbl for p, lbl in figure_map.items() if p not in raster_pages}
 
     if vector_pages and _RENDER_AVAILABLE:
-        print(f"🖥   Rendu de {len(vector_pages)} page(s) vectorielle(s)"
+        print(f"  Rendu de {len(vector_pages)} page(s) vectorielle(s)"
               f" (figures sans image raster) via pypdfium2…")
         rendered = render_vector_pages(args.pdf, vector_pages)
         images.extend(rendered)
         print(f"    → {len(rendered)} page(s) rastérisée(s) ajoutées")
     elif vector_pages and not _RENDER_AVAILABLE:
-        print(f"⚠️   {len(vector_pages)} figure(s) vectorielle(s) ignorées")
+        print(f"  {len(vector_pages)} figure(s) vectorielle(s) ignorées")
         print(f"    → Installez : pip install pypdfium2 pdfplumber")
 
     # Trier par page
     images.sort(key=lambda x: (x["page"], x["index"]))
 
-    print(f"\n🖼   {len(images)} image(s) à analyser…\n")
+    print(f"\n  {len(images)} image(s) à analyser…\n")
 
     # 3. Analyse forensique
     reports = []
