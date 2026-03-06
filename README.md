@@ -1,4 +1,4 @@
-# PDF Image Forensics
+# ForensEye PDF Image Forensics
 
 Outil d'analyse d'images scientifiques dans des articles PDF. Détecte automatiquement les manipulations potentielles : images dupliquées entre panneaux, clonage de régions, retouches de niveaux, etc.
 
